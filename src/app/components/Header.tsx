@@ -1,4 +1,5 @@
 'use client'
+import Link from 'next/link';
 import React, { useState } from 'react';
 
 interface NavbarProps {
@@ -46,9 +47,11 @@ const Navbar: React.FC<NavbarProps> = ({ className = '' }) => {
 
           {/* Login Button */}
           <div className="hidden md:block">
+            <Link href="/auth/signin">
             <button className="bg-blue-600 cursor-pointer text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors duration-200">
               Login
             </button>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -98,9 +101,11 @@ const Navbar: React.FC<NavbarProps> = ({ className = '' }) => {
                   {link.menu}
                 </a>
               ))}
+              <Link href="/auth/signin">
                 <button className="w-full text-left bg-blue-600 text-white px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700 transition-colors duration-200">
                 Login
-              </button>              
+              </button>  
+              </Link>            
             </div>
           </div>
         )}
