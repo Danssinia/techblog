@@ -1,5 +1,7 @@
 'use client'
+import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 interface LoginPageProps {
@@ -7,6 +9,47 @@ interface LoginPageProps {
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ className = '' }) => {
+    const route=useRouter()
+    // code to handle login state
+    const [formData,setFormData]=useState({
+        email:'',
+        password:''
+    })
+
+    //code to handle the change event
+    const handleChange = (e:React.ChangeEvent<HTMLInputElement>) =>{
+        const {name,value}=e.target
+
+        setFormData((prev)=>({
+            ...prev,
+            [name]:value
+        }))
+    }
+
+    //code to handle the submit event
+    const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) =>{
+        e.preventDefault()
+        const payload = {
+            email:formData.email,
+            password:formData.password
+        }
+        //console.log(payload)
+        //console.log("Loggedin",formData.emailOrUsername,formData.password)
+        let {data,error}= await supabase.auth.signInWithPassword({
+            email:formData.email,
+            password:formData.password
+        })
+        if (error){
+            console.error("Error Happened Man",error)
+        }
+        // else if (!data.user){
+        //     console.log("you don't have an account please signup first")
+        // }
+        else{
+            console.log("loggedin successfully",data)
+            route.push('/pages/create')
+        }
+    }
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const togglePasswordVisibility = (): void => {
@@ -29,7 +72,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ className = '' }) => {
 
         {/* Login Form */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          <form className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email/Username Field */}
             <div>
               <label htmlFor="emailOrUsername" className="block text-sm font-medium text-gray-700 mb-2">
@@ -38,8 +81,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ className = '' }) => {
               <div className="relative">
                 <input
                   type="text"
-                  id="emailOrUsername"
-                  name="emailOrUsername"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   placeholder="Enter your email or username"
                   className="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
                   required
@@ -60,6 +105,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ className = '' }) => {
                   type={showPassword ? 'text' : 'password'}
                   id="password"
                   name="password"
+                  value={formData.password}
+                  onChange={handleChange}
                   placeholder="Enter your password"
                   className="w-full px-4 py-3 pl-12 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
                   required

@@ -1,4 +1,5 @@
 'use client'
+import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
@@ -7,6 +8,16 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ className = '' }) => {
+  //code to handle the signout button
+  const handleSignout= async () =>{
+    const {error}= await supabase.auth.signOut()
+    if (error){
+      console.error("Error to signout")
+    }
+    else {
+      console.log("Signed Out")
+    }
+  }
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   const toggleMenu = (): void => {
@@ -44,7 +55,13 @@ const Navbar: React.FC<NavbarProps> = ({ className = '' }) => {
               ))}
             </div>
           </div>
-
+          
+          {/*Signout Button*/}
+          <div className='hidden md:block'>
+            <button onClick={handleSignout} className=" cursor-pointer w-full text-left bg-blue-600 text-white px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700 transition-colors duration-200">
+                Sign Out
+              </button>  
+          </div>
           {/* Login Button */}
           <div className="hidden md:block">
             <Link href="/auth/signin">

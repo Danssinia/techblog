@@ -43,9 +43,9 @@ const SignUpPage: React.FC<SignUpPageProps> = ({ className = '' }) => {
     if (error){
         console.error("Error Creating the user",error)
     }
-    else if (data.user)[
-        console.log("Already Signed Up",data.session?.access_token)
-    ]
+    // else if (data.user)[
+    //     console.log("Already Signed Up",data.session?.access_token)
+    // ]
     else {
         console.log("Created Successfully",data)
         route.push('/auth/signin')

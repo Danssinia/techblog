@@ -1,7 +1,7 @@
 'use client'
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
-import React, { ChangeEvent, FormEvent, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 
 interface CreateFormPageProps {
   className?: string;
@@ -9,6 +9,26 @@ interface CreateFormPageProps {
 
 const CreateFormPage: React.FC<CreateFormPageProps> = ({ className = '' }) => {
   const route=useRouter()
+  //Just a sample code to check the access control
+  useEffect(()=>{
+    const fetchuser=async () =>{
+      const {data,error} =await supabase.auth.getUser()
+      // if (error){
+      //   console.log("Error has happened",error)
+      // }
+      // else 
+      if (!data.user){
+        console.log("There is no user please signup first")
+        route.push('/auth/signup')
+      }
+      else {
+        console.log("There is valid user",data)
+        route.forward()
+      }
+    }
+    fetchuser()
+  },[])
+  // const route=useRouter()
   const [formData,setFormData]=useState({
     title:'',
     category:'',
