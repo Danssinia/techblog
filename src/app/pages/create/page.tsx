@@ -8,25 +8,39 @@ interface CreateFormPageProps {
 }
 
 const CreateFormPage: React.FC<CreateFormPageProps> = ({ className = '' }) => {
+  const [uid,setUid] = useState <any>()
   const route=useRouter()
   //Just a sample code to check the access control
   useEffect(()=>{
-    const fetchuser=async () =>{
-      const {data,error} =await supabase.auth.getUser()
-      // if (error){
-      //   console.log("Error has happened",error)
-      // }
-      // else 
-      if (!data.user){
-        console.log("There is no user please signup first")
-        route.push('/auth/signup')
+    const getSession= async () =>{
+      const {data,error}= await supabase.auth.getSession()
+      if(error){
+        console.error("Error getting the session")
       }
       else {
-        console.log("There is valid user",data)
-        route.forward()
+        const userid=data.session?.user.id;
+        setUid(userid);
+        // console.log("we get the session",data.session?.user.id)
       }
     }
-    fetchuser()
+    getSession()
+    // const fetchuser=async () =>{
+    //   const {data,error} =await supabase.auth.getUser()
+    //   // if (error){
+    //   //   console.log("Error has happened",error)
+    //   // }
+    //   // else 
+    //   if (!data.user){
+    //     console.log("There is no user please signup first")
+    //     route.push('/auth/signup')
+    //   }
+    //   else {
+    //     console.log("There is valid user",data.user.id)
+    //     setUid(data.user.id)
+    //     route.forward()
+    //   }
+    // }
+    // fetchuser()
   },[])
   // const route=useRouter()
   const [formData,setFormData]=useState({
@@ -52,10 +66,12 @@ const CreateFormPage: React.FC<CreateFormPageProps> = ({ className = '' }) => {
       title:formData.title,
       category:formData.category,
       author:formData.author,
-      content:formData.content
+      content:formData.content,
+      uid:uid
     }
 
-    //console.log("From Payload",payload)
+    console.log(payload)
+    console.log("From Payload",payload)
     try {
       const {data,error} = await supabase
     .from('blogs')

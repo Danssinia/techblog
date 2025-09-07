@@ -1,10 +1,12 @@
 'use client'
 import { supabase } from '@/lib/supabase';
+import { UUID } from 'crypto';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
 
 interface BlogPost {
+  uid:UUID;
   id: string;
   title: string;
   content: string;
@@ -22,19 +24,38 @@ interface BlogsPageProps {
 const BlogsPage: React.FC<BlogsPageProps> = ({ className = '' }) => {
   //state to handle the fetched data
   const [blogs,setBlogs]=useState<BlogPost[]>([])
+  const [uid,setUid]=useState <any>()
   //Code to handle the blog fecthing
   useEffect(()=>{
     const fetchData = async () =>{
-      const {data,error} = await supabase
+      //code to get the session first
+      const {data : {session} ,error: sessionError}=await supabase.auth.getSession()
+      if (sessionError){
+        console.error("Error getting the session",sessionError)
+      }
+//code to fetch the logged users blog
+      else if(session) {
+        console.log(session.user.id)
+        const {data,error} = await supabase
       .from('blogs')
       .select()
+      .eq('uid',session.user.id)
       if(error){
         console.error("Error Fetching Data",error)
       } 
       else{
         setBlogs(data)
       }
-    }
+      }
+      else {
+        console.log('User is not logged in.');
+      }
+
+      
+
+  }
+
+
     fetchData()
   },[])
 
